@@ -37,35 +37,35 @@ if uploaded_file is not None:
     if filter_option == "Контраст":
             processed_img = cv2.convertScaleAbs(img_array, alpha=1.7, beta=0)
     if filter_option == "Колірний сплеск":
-        target_color = st.sidebar.radio("Оберіть колір для виділення:", ["Червоний", "Зелений", "Синій"])
+        color_choice = st.sidebar.radio("Оберіть колір для виділення:", ["Червоний", "Зелений", "Синій"])
         
-        hsv_img = cv2.cvtColor(img_array, cv2.COLOR_RGB2HSV)
+        hsv = cv2.cvtColor(img_array, cv2.COLOR_RGB2HSV)
         
-        if target_color == "Червоний":
-            low_red1 = np.array([0, 50, 50])
-            high_red1 = np.array([10, 255, 255])
-            low_red2 = np.array([170, 50, 50])
-            high_red2 = np.array([180, 255, 255])
+        if color_choice == "Червоний":
+            low1 = np.array([0, 50, 50])
+            high1 = np.array([10, 255, 255])
+            low2 = np.array([170, 50, 50])
+            high2 = np.array([180, 255, 255])
             
-            mask1 = cv2.inRange(hsv_img, low_red1, high_red1)
-            mask2 = cv2.inRange(hsv_img, low_red2, high_red2)
-            mask = cv2.bitwise_or(mask1, mask2)
+            m1 = cv2.inRange(hsv, low1, high1)
+            m2 = cv2.inRange(hsv, low2, high2)
+            mask = cv2.bitwise_or(m1, m2)
             
-        elif target_color == "Зелений":
-            low_green = np.array([35, 50, 50])
-            high_green = np.array([85, 255, 255])
-            mask = cv2.inRange(hsv_img, low_green, high_green)
+        elif color_choice == "Зелений":
+            low_g = np.array([35, 50, 50])
+            high_g = np.array([85, 255, 255])
+            mask = cv2.inRange(hsv, low_g, high_g)
             
-        elif target_color == "Синій":
-            low_blue = np.array([90, 50, 50])
-            high_blue = np.array([140, 255, 255])
-            mask = cv2.inRange(hsv_img, low_blue, high_blue)
+        elif color_choice == "Синій":
+            low_b = np.array([90, 50, 50])
+            high_b = np.array([140, 255, 255])
+            mask = cv2.inRange(hsv, low_b, high_b)
 
-        gray_base = cv2.cvtColor(img_array, cv2.COLOR_RGB2GRAY)
-        gray_rgb = cv2.cvtColor(gray_base, cv2.COLOR_GRAY2RGB)
+        gray = cv2.cvtColor(img_array, cv2.COLOR_RGB2GRAY)
+        gray_3ch = cv2.merge([gray, gray, gray])
         
-        mask_3d = mask[:, :, None]
-        processed_img = np.where(mask_3d == 255, img_array, gray_rgb)
+        mask_3ch = cv2.merge([mask, mask, mask])
+        processed_img = np.where(mask_3ch == 255, img_array, gray_3ch)
 
     if filter_option == "Інверсія кольорів":
             processed_img = cv2.bitwise_not(img_array)
